@@ -30,7 +30,7 @@ def load(app):
             return user
     def create_user(username, displayName):
         with app.app_context():
-            log('logins', "[{date}] {ip} - " + user.name + " - No OAuth2 bridged user found, creating user")
+            log('logins', "[{date}] {ip} - " + username + " - No OAuth2 bridged user found, creating user")
             user = Users(email=username, name=displayName.strip())
             db.session.add(user)
             db.session.commit()
@@ -85,7 +85,7 @@ def load(app):
     #######################
     @provider_blueprint.route('/<string:auth_provider>/confirm', methods=['GET'])
     def confirm_auth_provider(auth_provider):
-        if not provider_users.has_key(auth_provider):
+        if not auth_provider in provider_users:
             return redirect('/')
 
         provider_user = provider_users[oauth_provider]() # Resolved lambda
@@ -104,4 +104,4 @@ def load(app):
     app.view_functions['auth.login'] = lambda: redirect(authentication_url_prefix + "/" + oauth_provider)
     app.view_functions['auth.register'] = lambda: ('', 204)
     app.view_functions['auth.reset_password'] = lambda: ('', 204)
-    app.view_functions['auth.confirm'] = lambda: ('', 204)     
+    app.view_functions['auth.confirm'] = lambda: ('', 204)
